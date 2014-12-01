@@ -1,4 +1,4 @@
-var React = require('react');
+var React = require('react/addons');
 var cycle = require('cycle');
 var RewireTestHelpers = require('rewire-test-helpers');
 
@@ -372,7 +372,6 @@ var componentMatchers = function(_chai, utils) {
       render: spyRender
     });
 
-    debugger
     var $component;
 
     var overrides = {};
