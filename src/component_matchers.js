@@ -322,25 +322,25 @@ var componentMatchers = function(_chai, utils) {
   /**
    * @param {Object} context chai context
    * @param {string} componentName
-   * @param {SinonSpy} component render method spy
-   * @param {Array} actualProps Array of props, one for each render call
+   * @param {SinonSpy} spy
    * @param {*[]} args
    */
   var _expectComponentToRenderWith =
-    function(context, componentName, spy, actualProps, args) {
+    function(context, componentName, spy, args) {
 
-    var matcher = args[0];
+    var props = args[0];
+    var children = args[1];
 
     var errorMessageEnd;
     if (spy.called) {
       errorMessageEnd =
-        'but called with ' + JSON.stringify(cycle.decycle(actualProps));
+        'but called with ' + JSON.stringify(cycle.decycle(spy.args));
     } else {
       errorMessageEnd = 'but never been called';
     }
 
     context.assert(
-      actualProps.any(function(props) { return matcher.test(props); }),
+      spy.calledWith.apply(spy, args),
       'expected component to render ' + componentName + ' with ' +
       JSON.stringify(args) + ' ' + errorMessageEnd,
       'expected component to not render ' + componentName + ' with ' +
@@ -361,36 +361,31 @@ var componentMatchers = function(_chai, utils) {
 
     var Component = this._obj.Component;
 
-    var renderedWithProps = [];
-
-    var spyRender = sinon.spy(function() {
-        renderedWithProps.push(this.props);
-        return this.transferPropsTo(React.DOM.div(null, this.props.children));
-    });
-
     var DummyComponent = React.createClass({
-      render: spyRender
+      render: function() {
+        return this.transferPropsTo(React.DOM.div(null, this.props.children));
+      }
     });
 
-    debugger
+    var spy = sinon.spy(DummyComponent);
     var $component;
 
     var overrides = {};
-    overrides[componentName] = DummyComponent;
+    overrides[componentName] = spy;
     RewireTestHelpers.rewired(Component, overrides, ()=> {
       $component = _renderComponent(this);
     });
 
     if (!negate || !options.with) {
-      _expectComponentToRender(this, componentName, spyRender);
+      _expectComponentToRender(this, componentName, spy);
     }
 
     if (options.with) {
       if (single) {
-        _expectComponentToRenderWith(this, componentName, spyRender, renderedWithProps, options.with);
+        _expectComponentToRenderWith(this, componentName, spy, options.with);
       } else {
         options.with.forEach(
-          _expectComponentToRenderWith.bind(null, this, componentName, spyRender, renderedWithProps)
+          _expectComponentToRenderWith.bind(null, this, componentName, spy)
         );
       }
     }
