@@ -1,4 +1,4 @@
-var React = require('react');
+var React = require('react/addons');
 var cycle = require('cycle');
 var RewireTestHelpers = require('rewire-test-helpers');
 
@@ -361,31 +361,36 @@ var componentMatchers = function(_chai, utils) {
 
     var Component = this._obj.Component;
 
-    var DummyComponent = React.createClass({
-      render: function() {
-        return this.transferPropsTo(React.DOM.div(null, this.props.children));
-      }
+    var renderSpy = sinon.spy(function() {
+      return(
+        React.createElement.apply(React,
+          ['div', this.props].concat(
+            this.props ? this.props.children : null
+          )
+        )
+      );
     });
 
-    var spy = sinon.spy(DummyComponent);
+    var DummyComponent = React.createClass({ render: renderSpy });
+
     var $component;
 
     var overrides = {};
-    overrides[componentName] = spy;
+    overrides[componentName] = renderSpy;
     RewireTestHelpers.rewired(Component, overrides, ()=> {
       $component = _renderComponent(this);
     });
 
     if (!negate || !options.with) {
-      _expectComponentToRender(this, componentName, spy);
+      _expectComponentToRender(this, componentName, renderSpy);
     }
 
     if (options.with) {
       if (single) {
-        _expectComponentToRenderWith(this, componentName, spy, options.with);
+        _expectComponentToRenderWith(this, componentName, renderSpy, options.with);
       } else {
         options.with.forEach(
-          _expectComponentToRenderWith.bind(null, this, componentName, spy)
+          _expectComponentToRenderWith.bind(null, this, componentName, renderSpy)
         );
       }
     }
