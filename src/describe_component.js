@@ -14,7 +14,7 @@ var describeComponent = function(Component, contextFn) {
   var componentName = Component.displayName;
 
   var render = function(props, children) {
-    var component = Component(props, children);
+    var component = React.createElement(Component, props, children);
     return PlaygroundTestHelpers.$render(component, React);
   };
 
