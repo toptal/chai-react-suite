@@ -1,6 +1,7 @@
 var React = require('react/addons');
 var cycle = require('cycle');
 var RewireTestHelpers = require('rewire-test-helpers');
+var omit = require('lodash-node/modern/objects/omit');
 
 /**
  * Set of Chai matchers aimed to simplify testing of React components.
@@ -193,9 +194,7 @@ var componentMatchers = function(_chai, utils) {
 
     var $component = _renderComponent(this);
 
-    var attrs = Object.reject(
-      expectations, 'find', 'is', 'text', 'value', 'props'
-    );
+    var attrs = omit(expectations, 'find', 'is', 'text', 'value', 'props');
 
     var $el;
     if (expectations.find) {
