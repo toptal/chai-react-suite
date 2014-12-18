@@ -53,7 +53,8 @@ var describeComponent = function(Component, contextFn) {
       });
 
       var deps = {};
-      Array.create(arguments).forEach(function(componentName) {
+      var args = Array.prototype.slice.call(arguments);
+      args.forEach(function(componentName) {
         deps[componentName] = DummyWhatever;
       });
       injectDependenciesFilter(Component, deps);
