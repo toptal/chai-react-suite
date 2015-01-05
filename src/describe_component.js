@@ -1,6 +1,7 @@
 var React = require('react/addons');
 var cycle = require('cycle');
 var PlaygroundTestHelpers = require('playground-test-helpers');
+var RedefineTestHelpers = require('redefine-test-helpers');
 
 /**
  * Helper that simplifies describing of component. It takes component name,
@@ -24,21 +25,58 @@ var describeComponent = function(Component, contextFn) {
   };
 
   var setAndDataTo = function(fn) {
-    fn.and = (andFunction)=> {
+    fn.and = function(andFunction) {
       fn.andFunction = andFunction;
       return fn;
     }
   };
 
+  var setRedefineDataTo = function(fn) {
+    fn.restore = function() {};
+
+    fn.redefined = function(redefineMap) {
+      var proto = this.Component.type.prototype;
+
+      var restoreOriginal = RedefineTestHelpers.redefine(proto, redefineMap);
+
+      var restoreAutoBindMap;
+      if (proto.__reactAutoBindMap) {
+        var redefineMapFns = {};
+        for (var key in redefineMap) {
+          if (typeof redefineMap[key] == 'function') {
+            redefineMapFns[key] = redefineMap[key];
+          }
+        }
+
+        restoreAutoBindMap = RedefineTestHelpers.redefine(
+          proto.__reactAutoBindMap, redefineMapFns
+        );
+      }
+
+      fn.restore = function() {
+        restoreOriginal();
+        if (restoreAutoBindMap) {
+          restoreAutoBindMap();
+        }
+      }
+
+      return fn;
+    };
+  };
+
+  var setDataToRender = function(render) {
+    setComponentDataTo(render);
+    setAndDataTo(render);
+    setRedefineDataTo(render);
+  };
+
   render.with = function(props, children) {
     var bindedRender = render.bind(PlaygroundTestHelpers, props, children);
-    setComponentDataTo(bindedRender);
-    setAndDataTo(bindedRender);
+    setDataToRender(bindedRender);
     return bindedRender;
   };
 
-  setComponentDataTo(render);
-  setAndDataTo(render);
+  setDataToRender(render);
 
   var helpers = {
     mockDepsFilter: function() {
@@ -69,6 +107,8 @@ var describeComponent = function(Component, contextFn) {
 
   describe(componentName, function() {
     beforeEach(PlaygroundTestHelpers.prepare);
+    afterEach(render.restore);
+
     contextFn(render, helpers);
   });
 };
