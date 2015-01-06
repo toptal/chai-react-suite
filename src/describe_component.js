@@ -107,7 +107,11 @@ var describeComponent = function(Component, contextFn) {
 
   describe(componentName, function() {
     beforeEach(PlaygroundTestHelpers.prepare);
-    afterEach(render.restore);
+
+    afterEach(function() {
+      React.unmountComponentAtNode(document.getElementById('playground'));
+      render.restore();
+    });
 
     contextFn(render, helpers);
   });
