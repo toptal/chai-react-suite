@@ -327,8 +327,7 @@ var componentMatchers = function(_chai, utils) {
   var _expectComponentToRenderWith =
     function(context, componentName, spy, args) {
 
-    var props = args[0];
-    var children = args[1];
+    if (args[0] === null) args[0] = match({});
 
     var errorMessageEnd;
     if (spy.called) {
