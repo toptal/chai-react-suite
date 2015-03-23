@@ -375,9 +375,9 @@ var componentMatchers = function(_chai, utils) {
 
     var overrides = {};
     overrides[componentName] = renderSpy;
-    RewireTestHelpers.rewired(Component, overrides, ()=> {
+    RewireTestHelpers.rewired(Component, overrides, function() {
       $component = _renderComponent(this);
-    });
+    }.bind(this));
 
     if (!negate || !options.with) {
       _expectComponentToRender(this, componentName, renderSpy);
