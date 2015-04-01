@@ -17,15 +17,15 @@ var componentMatchers = function(_chai, utils) {
    */
   _renderComponent = function(context) {
     var obj = context._obj;
-    var $component = obj();
+    var renderResult = obj();
     if (obj.andFunction) {
-      obj.andFunction($component);
+      obj.andFunction(jQuery(renderResult.el), renderResult.instance);
     }
 
     // We are returning not $component it self but content of playground
     // because in the "and" function state may be changed and old
     // element can be changed.
-    return $('#playground >');
+    return jQuery('#playground >');
   };
 
   /**

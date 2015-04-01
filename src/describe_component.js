@@ -1,82 +1,28 @@
 var React = require('react/addons');
 var cycle = require('cycle');
-var PlaygroundTestHelpers = require('playground-test-helpers');
+var Playground = require('./playground');
 var RedefineTestHelpers = require('redefine-test-helpers');
 
-/**
- * Helper that simplifies describing of component. It takes component name,
- * prepares playground for tests and pass render to context function.
- *
- * @param {React component} Component
- * @param {function} contextFn
- */
-var describeComponent = function(Component, contextFn) {
-
+// Helper that simplifies describing of component. It takes component name,
+// prepares playground for tests and pass render to context function.
+//
+// Component - React component
+// describeBodyFn - function that will be called in context of describe
+var describeComponent = function(Component, describeBodyFn) {
   var componentName = Component.displayName;
 
   var render = function(props, children) {
     var component = React.createElement(Component, props, children);
-    return PlaygroundTestHelpers.$render(component, React);
-  };
-
-  var setComponentDataTo = function(fn) {
-    fn.Component = Component;
-    fn.componentName = componentName;
-  };
-
-  var setAndDataTo = function(fn) {
-    fn.and = function(andFunction) {
-      fn.andFunction = andFunction;
-      return fn;
-    }
-  };
-
-  var setRedefineDataTo = function(fn) {
-    fn.restore = function() {};
-
-    fn.redefined = function(redefineMap) {
-      var proto = this.Component.type.prototype;
-
-      var restoreOriginal = RedefineTestHelpers.redefine(proto, redefineMap);
-
-      var restoreAutoBindMap;
-      if (proto.__reactAutoBindMap) {
-        var redefineMapFns = {};
-        for (var key in redefineMap) {
-          if (typeof redefineMap[key] == 'function') {
-            redefineMapFns[key] = redefineMap[key];
-          }
-        }
-
-        restoreAutoBindMap = RedefineTestHelpers.redefine(
-          proto.__reactAutoBindMap, redefineMapFns
-        );
-      }
-
-      fn.restore = function() {
-        restoreOriginal();
-        if (restoreAutoBindMap) {
-          restoreAutoBindMap();
-        }
-      }
-
-      return fn;
-    };
-  };
-
-  var setDataToRender = function(render) {
-    setComponentDataTo(render);
-    setAndDataTo(render);
-    setRedefineDataTo(render);
+    return Playground.render(component);
   };
 
   render.with = function(props, children) {
-    var bindedRender = render.bind(PlaygroundTestHelpers, props, children);
-    setDataToRender(bindedRender);
+    var bindedRender = render.bind(render, props, children);
+    setDataTo(bindedRender);
     return bindedRender;
   };
 
-  setDataToRender(render);
+  setDataTo(render);
 
   var helpers = {
     mockDepsFilter: function() {
@@ -106,15 +52,65 @@ var describeComponent = function(Component, contextFn) {
   };
 
   describe(componentName, function() {
-    beforeEach(PlaygroundTestHelpers.prepare);
+    Playground.filter();
 
     afterEach(function() {
-      React.unmountComponentAtNode(document.getElementById('playground'));
       render.restore();
     });
 
-    contextFn(render, helpers);
+    describeBodyFn(render, helpers);
   });
+
+  function setComponentDataTo(fn) {
+    fn.Component = Component;
+    fn.componentName = componentName;
+  }
+
+  function setAndDataTo(fn) {
+    fn.and = function(andFunction) {
+      fn.andFunction = andFunction;
+      return fn;
+    }
+  }
+
+  function setRedefineDataTo(fn) {
+    fn.restore = function() {};
+
+    fn.redefined = function(overrides) {
+      var proto = this.Component.type.prototype;
+
+      var restoreOriginal = RedefineTestHelpers.redefine(proto, overrides);
+
+      var restoreAutoBindMap;
+      if (proto.__reactAutoBindMap) {
+        var overridesFns = {};
+        for (var key in overrides) {
+          if (typeof overrides[key] == 'function') {
+            overridesFns[key] = overrides[key];
+          }
+        }
+
+        restoreAutoBindMap = RedefineTestHelpers.redefine(
+          proto.__reactAutoBindMap, overridesFns
+        );
+      }
+
+      fn.restore = function() {
+        restoreOriginal();
+        if (restoreAutoBindMap) {
+          restoreAutoBindMap();
+        }
+      }
+
+      return fn;
+    };
+  }
+
+  function setDataTo(fn) {
+    setComponentDataTo(fn);
+    setAndDataTo(fn);
+    setRedefineDataTo(fn);
+  }
 };
 
 module.exports = describeComponent;

@@ -14,7 +14,6 @@
   "dependencies": {
     "cycle": "^1.0.3",
     "lodash-node": "^2.4.1",
-    "playground-test-helpers": "^0.1.0",
     "react": "^0.12.0",
     "redefine-test-helpers": "^0.1.0",
     "rewire-test-helpers": "^0.1.0"
