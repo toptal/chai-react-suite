@@ -28,11 +28,7 @@ var describeComponent = function(Component, describeBodyFn) {
     mockDepsFilter: function() {
       var DummyWhatever = React.createClass({
         render: function() {
-          var propsJSON = JSON.stringify(cycle.decycle(this.props));
-          var props = { className: this.props.className, 'data-props': propsJSON };
-          var children = this.props.children;
-
-          return React.DOM.div(props, children);
+          return null
         }
       });
 
@@ -77,7 +73,7 @@ var describeComponent = function(Component, describeBodyFn) {
     fn.restore = function() {};
 
     fn.redefined = function(overrides) {
-      var proto = this.Component.type.prototype;
+      var proto = this.Component.prototype;
 
       var restoreOriginal = RedefineTestHelpers.redefine(proto, overrides);
 

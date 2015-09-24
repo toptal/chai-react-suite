@@ -359,22 +359,18 @@ var componentMatchers = function(_chai, utils) {
 
     var Component = this._obj.Component;
 
-    var renderSpy = sinon.spy(function() {
-      return(
-        React.createElement.apply(React,
-          ['div', this.props].concat(
-            this.props ? this.props.children : null
-          )
-        )
-      );
+    var renderSpy = sinon.spy()
+    var DummyComponent = React.createClass({
+      render: function() {
+        renderSpy(this.props, this.props.children)
+        return null
+      }
     });
-
-    var DummyComponent = React.createClass({ render: renderSpy });
 
     var $component;
 
     var overrides = {};
-    overrides[componentName] = renderSpy;
+    overrides[componentName] = DummyComponent;
     RewireTestHelpers.rewired(Component, overrides, function() {
       $component = _renderComponent(this);
     }.bind(this));

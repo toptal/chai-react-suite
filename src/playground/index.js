@@ -1,4 +1,4 @@
-var React = require('react');
+var React = require('react/addons');
 
 var PLAYGROUND_ID = 'playground';
 
@@ -31,7 +31,7 @@ var Playground = {
 
   render: function(Component) {
     var playgroundEl = Playground.get();
-    var componentInstance = React.renderComponent(Component, playgroundEl);
+    var componentInstance = React.render(Component, playgroundEl);
     var componentEl = playgroundEl.firstChild;
 
     return { el: componentEl, instance: componentInstance };
