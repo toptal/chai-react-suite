@@ -1,4 +1,5 @@
-var React = require('react/addons');
+var React = require('react');
+var ReactTestUtils = require('react-addons-test-utils')
 var cycle = require('cycle');
 var Playground = require('./playground');
 var RedefineTestHelpers = require('redefine-test-helpers');
@@ -40,7 +41,7 @@ var describeComponent = function(Component, describeBodyFn) {
       injectDependenciesFilter(Component, deps);
     },
 
-    simulate: React.addons.TestUtils.Simulate,
+    simulate: ReactTestUtils.Simulate,
 
     el: function() {
       return document.getElementById('playground').firstChild;

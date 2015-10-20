@@ -1,4 +1,4 @@
-var React = require('react/addons');
+var React = require('react');
 var cycle = require('cycle');
 var RewireTestHelpers = require('rewire-test-helpers');
 var omit = require('lodash-node/modern/objects/omit');

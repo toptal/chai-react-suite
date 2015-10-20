@@ -1,4 +1,4 @@
-var React = require('react/addons');
+var ReactDOM = require('react-dom');
 
 var PLAYGROUND_ID = 'playground';
 
@@ -21,7 +21,7 @@ var Playground = {
   },
 
   unmount: function() {
-    React.unmountComponentAtNode(Playground.get());
+    ReactDOM.unmountComponentAtNode(Playground.get());
   },
 
   filter: function() {
@@ -31,7 +31,7 @@ var Playground = {
 
   render: function(Component) {
     var playgroundEl = Playground.get();
-    var componentInstance = React.render(Component, playgroundEl);
+    var componentInstance = ReactDOM.render(Component, playgroundEl);
     var componentEl = playgroundEl.firstChild;
 
     return { el: componentEl, instance: componentInstance };
