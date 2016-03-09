@@ -1,6 +1,6 @@
 var React = require('react');
 var cycle = require('cycle');
-var RewireTestHelpers = require('rewire-test-helpers');
+var rewired = require('rewire-test-helpers').rewired;
 var omit = require('lodash-node/modern/objects/omit');
 
 /**
@@ -371,7 +371,7 @@ var componentMatchers = function(_chai, utils) {
 
     var overrides = {};
     overrides[componentName] = DummyComponent;
-    RewireTestHelpers.rewired(Component, overrides, function() {
+    rewired(Component, overrides, function() {
       $component = _renderComponent(this);
     }.bind(this));
 
