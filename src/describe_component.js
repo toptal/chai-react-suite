@@ -1,3 +1,4 @@
+var rewireFilter = require('rewire-test-helpers').rewireFilter;
 var React = require('react');
 var ReactTestUtils = require('react-addons-test-utils')
 var cycle = require('cycle');
@@ -38,7 +39,7 @@ var describeComponent = function(Component, describeBodyFn) {
       args.forEach(function(componentName) {
         deps[componentName] = DummyWhatever;
       });
-      injectDependenciesFilter(Component, deps);
+      rewireFilter(Component, deps);
     },
 
     simulate: ReactTestUtils.Simulate,
