@@ -1,6 +1,6 @@
 {
   "name": "chai-react-suite",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "TODO",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   "author": "Sasha Koss <kossnocorp@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "cycle": "^1.0.3",
+    "json-decycle": "^1.0.0",
     "lodash-node": "^2.4.1",
     "redefine-test-helpers": "^0.1.0",
     "rewire-test-helpers": "1.0.0-rc2"
