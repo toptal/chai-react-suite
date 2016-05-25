@@ -1,5 +1,5 @@
 var React = require('react');
-var cycle = require('cycle');
+var decycle = require('json-decycle/index').decycle;
 var rewired = require('rewire-test-helpers').rewired;
 var omit = require('lodash-node/modern/objects/omit');
 
@@ -332,7 +332,7 @@ var componentMatchers = function(_chai, utils) {
     var errorMessageEnd;
     if (spy.called) {
       errorMessageEnd =
-        'but called with ' + JSON.stringify(cycle.decycle(spy.args));
+        'but called with ' + JSON.stringify(decycle(spy.args));
     } else {
       errorMessageEnd = 'but never been called';
     }
@@ -410,4 +410,3 @@ var componentMatchers = function(_chai, utils) {
 };
 
 module.exports = componentMatchers;
-
