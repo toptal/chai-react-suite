@@ -1,5 +1,5 @@
 var React = require('react');
-var decycle = require('json-decycle/index').decycle;
+var decycle = require('json-cycle').decycle;
 var rewired = require('rewire-test-helpers').rewired;
 var omit = require('lodash-node/modern/objects/omit');
 
